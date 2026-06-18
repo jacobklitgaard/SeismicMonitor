@@ -1,4 +1,5 @@
 package org.example.seismicmonitor.model;
 
-public class AlertStatus {
+public enum AlertStatus {
+    UNDER_REVIEW, ACTIVE, NOT_ACTIVE, FALSE_ALARM
 }

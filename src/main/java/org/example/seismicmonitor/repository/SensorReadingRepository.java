@@ -1,4 +1,7 @@
 package org.example.seismicmonitor.repository;
 
-public class SensorReadingRepository {
+import org.example.seismicmonitor.model.SensorReading;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SensorReadingRepository extends JpaRepository<SensorReading, String> {
 }

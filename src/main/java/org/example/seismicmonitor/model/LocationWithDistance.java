@@ -1,4 +1,3 @@
 package org.example.seismicmonitor.model;
 
-public class LocationWithDistance {
-}
+public record LocationWithDistance(Location location, double distance) {}

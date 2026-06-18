@@ -1,0 +1,7 @@
+services:
+  sensors:
+    image: ghcr.io/osman-butt/exam-seismic-simulator:latest
+    environment:
+      STUDENT_APP_BASE_URL: "http://host.docker.internal:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

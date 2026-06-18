@@ -1,4 +1,5 @@
 package org.example.seismicmonitor.service.geocoding;
 
-public class GeocodingService {
+public interface GeocodingService {
+    String getLocationName(double latitude, double longitude);
 }
