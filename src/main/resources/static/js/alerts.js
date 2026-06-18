@@ -12,7 +12,7 @@ async function login() {
 
     if (response.ok) {
         const token = response.headers.get('Authorization');
-        sessionStorage.setItem('jwt', token);
+        localStorage.setItem('jwt', token);
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadActiveAlerts();
@@ -22,7 +22,7 @@ async function login() {
 }
 
 function getHeaders() {
-    return { 'Authorization': sessionStorage.getItem('jwt') };
+    return { 'Authorization': localStorage.getItem('jwt') };
 }
 
 async function loadActiveAlerts() {
@@ -94,4 +94,5 @@ document.getElementById('report-form')?.addEventListener('submit', async (e) => 
 
     alert('Report submitted!');
     loadActiveAlerts();
+    setInterval(loadActiveAlerts, 15000);
 });

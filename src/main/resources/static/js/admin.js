@@ -12,7 +12,7 @@ async function login() {
 
     if (response.ok) {
         const token = response.headers.get('Authorization');
-        sessionStorage.setItem('jwt', token);
+        localStorage.setItem('jwt', token);
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
         loadAllAlerts();
@@ -23,7 +23,7 @@ async function login() {
 }
 
 function getHeaders() {
-    return { 'Authorization': sessionStorage.getItem('jwt') };
+    return { 'Authorization': localStorage.getItem('jwt') };
 }
 
 async function loadAllAlerts() {
@@ -80,4 +80,9 @@ async function loadReadings() {
         `;
         tbody.appendChild(tr);
     }
+
+    setInterval(() => {
+        loadAllAlerts();
+        loadReadings();
+    }, 15000);
 }
