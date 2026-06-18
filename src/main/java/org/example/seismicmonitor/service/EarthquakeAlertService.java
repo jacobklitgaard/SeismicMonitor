@@ -28,9 +28,12 @@ public class EarthquakeAlertService {
         this.geocodingService = geocodingService;
     }
 
+    // trys to create an alert from three sensor readings
     public void tryCreateAlert(List<SensorReadingDTO> readings, List<SensorReading> savedReadings) {
         if (readings.size() != 3) return;
 
+
+        // converts new SensorReadings to LocationWithDistance (measurements) for the trilateration-algorithm
         List<LocationWithDistance> measurements = readings.stream()
                 .map(r -> new LocationWithDistance(
                         new Location(r.getSensorLocation().getLatitude(),
@@ -39,10 +42,12 @@ public class EarthquakeAlertService {
                 .toList();
 
         try {
+            // get data
             Location epicenter = epicenterEstimator.estimate(measurements);
             double magnitude = magnitudeEstimator.estimate(readings);
             String locationName = geocodingService.getLocationName(epicenter.latitude(), epicenter.longitude());
 
+            // build alert
             EarthquakeAlert alert = new EarthquakeAlert();
             alert.setStatus(AlertStatus.UNDER_REVIEW);
             alert.setEpicenterLatitude(epicenter.latitude());
@@ -54,7 +59,7 @@ public class EarthquakeAlertService {
             alertRepository.save(alert);
 
         } catch (IllegalArgumentException e) {
-            // Beregning fejlede – gem målinger men opret ikke varsel
+            // quiet exception handling - save readings but no alert - and no error
         }
     }
 
@@ -81,6 +86,7 @@ public class EarthquakeAlertService {
         return alertRepository.save(alert);
     }
 
+    // rules for updating status
     private void validateTransition(AlertStatus current, AlertStatus next) {
         boolean valid = switch (current) {
             case UNDER_REVIEW -> next == AlertStatus.ACTIVE || next == AlertStatus.FALSE_ALARM;

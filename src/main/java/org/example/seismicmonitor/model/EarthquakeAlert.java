@@ -1,5 +1,6 @@
 package org.example.seismicmonitor.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,8 @@ public class EarthquakeAlert {
     private double estimatedMagnitude;
     private LocalDateTime createdAt;
 
+    // mirrors the relation
+    @JsonManagedReference
     @OneToMany(mappedBy = "alert")
     private List<SensorReading> readings;
 }

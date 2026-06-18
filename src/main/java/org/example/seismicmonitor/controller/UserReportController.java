@@ -21,6 +21,8 @@ public class UserReportController {
         this.userReportRepository = userReportRepository;
     }
 
+    // creates user report
+    // takes username from JWT via authentication.getName()
     @PostMapping
     public ResponseEntity<?> createReport(@PathVariable Long alertId,
                                           @RequestParam int intensity,
@@ -31,16 +33,20 @@ public class UserReportController {
             return ResponseEntity.status(409).body(e.getMessage());
         }
     }
+
+    // all reports for an alert
     @GetMapping
     public ResponseEntity<List<UserReport>> getReports(@PathVariable Long alertId) {
         return ResponseEntity.ok(userReportService.getReportsForAlert(alertId));
     }
 
+    // for user and admin
     @GetMapping("/count")
     public ResponseEntity<Integer> getCount(@PathVariable Long alertId) {
         return ResponseEntity.ok(userReportService.countReportsForAlert(alertId));
     }
 
+    // for admin
     @GetMapping("/average-intensity")
     public ResponseEntity<Double> getAverageIntensity(@PathVariable Long alertId) {
         Double avg = userReportRepository.averageIntensityByAlertId(alertId);

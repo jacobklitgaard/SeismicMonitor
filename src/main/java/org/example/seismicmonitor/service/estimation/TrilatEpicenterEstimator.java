@@ -8,6 +8,7 @@ import java.util.List;
 @Component
 public class TrilatEpicenterEstimator implements EpicenterEstimator {
 
+    // calculates epicenter from position of three sensors
     @Override
     public Location estimate(List<LocationWithDistance> measurements) {
         if (measurements.size() < 3) {

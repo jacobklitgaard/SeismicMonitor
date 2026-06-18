@@ -12,6 +12,7 @@ public interface UserReportRepository extends JpaRepository<UserReport, Long> {
     int countByAlertId(Long alertId);
     boolean existsByAlertIdAndReportedBy(Long alertId, String reportedBy);
 
+    // calculates avg of intensity of all reports on the a given alert
     @Query("SELECT AVG(r.intensity) FROM UserReport r WHERE r.alert.id = :alertId")
     Double averageIntensityByAlertId(@Param("alertId") Long alertId);
 }

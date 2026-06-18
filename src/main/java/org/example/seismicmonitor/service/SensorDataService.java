@@ -25,6 +25,7 @@ public class SensorDataService {
         this.earthquakeAlertService = earthquakeAlertService;
     }
 
+    // takes raw readings (dto) converts to entity (reading) saves to repo and used by tryCreateAlert
     public void processReadings(List<SensorReadingDTO> dtos) {
         List<SensorReading> savedReadings = new ArrayList<>();
 
@@ -50,6 +51,7 @@ public class SensorDataService {
         earthquakeAlertService.tryCreateAlert(dtos, savedReadings);
     }
 
+    // for admin
     public List<SensorReading> getAllReadings() {
         return sensorReadingRepository.findAll();
     }

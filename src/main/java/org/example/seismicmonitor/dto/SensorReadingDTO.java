@@ -15,6 +15,7 @@ public class SensorReadingDTO {
     private double estimatedMagnitude;
     private LocalDateTime recordedAt;
 
+    // nested class
     @Getter @Setter @NoArgsConstructor
     public static class SensorLocationDTO {
         private double latitude;

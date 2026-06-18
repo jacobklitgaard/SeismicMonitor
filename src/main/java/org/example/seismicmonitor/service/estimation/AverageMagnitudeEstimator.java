@@ -10,7 +10,7 @@ public class AverageMagnitudeEstimator implements MagnitudeEstimator {
     @Override
     public double estimate(List<SensorReadingDTO> readings) {
         return readings.stream()
-                .mapToDouble(SensorReadingDTO::getEstimatedMagnitude)
+                .mapToDouble(reading -> reading.getEstimatedMagnitude())
                 .average()
                 .orElse(0.0);
     }

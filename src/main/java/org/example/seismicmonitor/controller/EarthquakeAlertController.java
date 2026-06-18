@@ -19,22 +19,26 @@ public class EarthquakeAlertController {
         this.alertService = alertService;
     }
 
+    // for admin
     @GetMapping
     public ResponseEntity<List<EarthquakeAlert>> getAllAlerts() {
         return ResponseEntity.ok(alertService.getAllAlerts());
     }
 
+    // for users
     @GetMapping("/active")
     public ResponseEntity<List<EarthquakeAlert>> getActiveAlerts() {
         return ResponseEntity.ok(alertService.getActiveAlerts());
     }
 
+    // change status
     @PutMapping("/{id}/status")
     public ResponseEntity<EarthquakeAlert> updateStatus(@PathVariable Long id,
                                                         @RequestParam AlertStatus status) {
         return ResponseEntity.ok(alertService.updateStatus(id, status));
     }
 
+    // for raw data
     @GetMapping("/{id}/readings")
     public ResponseEntity<List<SensorReading>> getReadingsForAlert(@PathVariable Long id) {
         return ResponseEntity.ok(alertService.getReadingsForAlert(id));

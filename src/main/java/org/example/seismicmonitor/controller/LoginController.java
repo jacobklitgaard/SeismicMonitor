@@ -28,6 +28,7 @@ public class LoginController {
         this.jwtService = jwtService;
     }
 
+    // login request from frontend - returns JWT
     @PostMapping("/dologin")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Authentication auth = authenticationManager.authenticate(

@@ -22,36 +22,35 @@ public class UserReportService {
     }
 
     public UserReport createReport(Long alertId, int intensity, String username) {
-        System.out.println("Username from token: " + username);
 
+        // find alert
         EarthquakeAlert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new RuntimeException("Alert not found"));
 
+        // check if active
         if (alert.getStatus() != AlertStatus.ACTIVE) {
             throw new IllegalStateException("Cannot report on a non-active alert");
         }
 
-        System.out.println("Checking if " + username + " already reported alert " + alertId);
-        System.out.println("Exists: " + userReportRepository.existsByAlertIdAndReportedBy(alertId, username));
-
+        // check if already reported on
         if (userReportRepository.existsByAlertIdAndReportedBy(alertId, username)) {
             throw new IllegalStateException("You have already reported this alert");
         }
 
+        // build report
         UserReport report = new UserReport();
         report.setAlert(alert);
         report.setIntensity(intensity);
         report.setReportedBy(username);
         report.setCreatedAt(LocalDateTime.now());
-        UserReport saved = userReportRepository.save(report);
-        System.out.println("Saved report with reportedBy: " + saved.getReportedBy());
-        return saved;
+        return userReportRepository.save(report);
     }
 
     public List<UserReport> getReportsForAlert(Long alertId) {
         return userReportRepository.findByAlertId(alertId);
     }
 
+    // for admin and user
     public int countReportsForAlert(Long alertId) {
         return userReportRepository.countByAlertId(alertId);
     }

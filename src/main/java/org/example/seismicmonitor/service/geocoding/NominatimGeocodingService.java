@@ -8,6 +8,7 @@ public class NominatimGeocodingService implements GeocodingService {
 
     private final WebClient webClient;
 
+    // configures webclient with Nominatim as base-URL and a User-Agent header
     public NominatimGeocodingService(WebClient.Builder builder) {
         this.webClient = builder
                 .baseUrl("https://nominatim.openstreetmap.org")
@@ -15,6 +16,7 @@ public class NominatimGeocodingService implements GeocodingService {
                 .build();
     }
 
+    // GET-request for Nominatim's reverse geocoding endpoint
     @Override
     public String getLocationName(double latitude, double longitude) {
         NominatimResponse response = webClient.get()

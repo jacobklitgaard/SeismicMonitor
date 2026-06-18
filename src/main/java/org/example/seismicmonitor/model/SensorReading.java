@@ -18,6 +18,7 @@ public class SensorReading {
     @JoinColumn(name = "sensor_id")
     private Sensor sensor;
 
+    // owns the relation
     @ManyToOne
     @JoinColumn(name = "alert_id")
     @JsonBackReference

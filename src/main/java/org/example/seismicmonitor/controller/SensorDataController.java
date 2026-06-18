@@ -18,12 +18,15 @@ public class SensorDataController {
         this.sensorDataService = sensorDataService;
     }
 
+    // gets readings from docker container
+    // processReadings trys to create alert if three sensors read same activity
     @PostMapping("/sensor-data")
     public ResponseEntity<Void> receiveSensorData(@RequestBody List<SensorReadingDTO> readings) {
         sensorDataService.processReadings(readings);
         return ResponseEntity.ok().build();
     }
 
+    // for admin
     @GetMapping("/sensor-readings")
     public ResponseEntity<List<SensorReading>> getAllReadings() {
         return ResponseEntity.ok(sensorDataService.getAllReadings());
