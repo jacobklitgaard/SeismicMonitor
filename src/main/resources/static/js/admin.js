@@ -1,5 +1,14 @@
 const API = 'http://localhost:8080/api';
 
+window.addEventListener('load', () => {
+    if (localStorage.getItem('jwt')) {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
+        loadAllAlerts();
+        loadReadings();
+    }
+});
+
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;

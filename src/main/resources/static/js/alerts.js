@@ -1,4 +1,14 @@
 const API = 'http://localhost:8080/api';
+let map = null;
+
+window.addEventListener('load', () => {
+    if (localStorage.getItem('jwt')) {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        loadActiveAlerts();
+        setInterval(loadActiveAlerts, 15000);
+    }
+});
 
 async function login() {
     const username = document.getElementById('username').value;
@@ -16,6 +26,7 @@ async function login() {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadActiveAlerts();
+        setInterval(loadActiveAlerts, 15000);
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';
     }
@@ -59,8 +70,6 @@ async function loadActiveAlerts() {
     addMarkersToMap(alerts);
 }
 
-let map = null;
-
 function initMap() {
     if (map) return;
     map = L.map('map').setView([55.0, 12.0], 5);
@@ -94,5 +103,4 @@ document.getElementById('report-form')?.addEventListener('submit', async (e) => 
 
     alert('Report submitted!');
     loadActiveAlerts();
-    setInterval(loadActiveAlerts, 15000);
 });
