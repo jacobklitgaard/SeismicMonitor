@@ -1,5 +1,6 @@
 package org.example.seismicmonitor.service;
 
+import org.example.seismicmonitor.model.AlertStatus;
 import org.example.seismicmonitor.model.EarthquakeAlert;
 import org.example.seismicmonitor.model.UserReport;
 import org.example.seismicmonitor.repository.EarthquakeAlertRepository;
@@ -23,6 +24,10 @@ public class UserReportService {
     public UserReport createReport(Long alertId, int intensity) {
         EarthquakeAlert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new RuntimeException("Alert not found"));
+
+        if (alert.getStatus() != AlertStatus.ACTIVE) {
+            throw new IllegalStateException("Cannot report on a non-active alert");
+        }
 
         UserReport report = new UserReport();
         report.setAlert(alert);
