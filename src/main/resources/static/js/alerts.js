@@ -36,6 +36,8 @@ async function loadActiveAlerts() {
         return;
     }
 
+    initMap();
+
     for (const alert of alerts) {
         const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, {
             headers: getHeaders()
@@ -53,6 +55,31 @@ async function loadActiveAlerts() {
         `;
         container.appendChild(card);
     }
+
+    addMarkersToMap(alerts);
+}
+
+let map = null;
+
+function initMap() {
+    if (map) return;
+    map = L.map('map').setView([55.0, 12.0], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+}
+
+function addMarkersToMap(alerts) {
+    if (!map) return;
+    alerts.forEach(alert => {
+        L.marker([alert.epicenterLatitude, alert.epicenterLongitude])
+            .addTo(map)
+            .bindPopup(`
+                <b>Alert #${alert.id}</b><br>
+                Magnitude: ${alert.estimatedMagnitude.toFixed(1)}<br>
+                ${alert.locationName}
+            `);
+    });
 }
 
 document.getElementById('report-form')?.addEventListener('submit', async (e) => {
