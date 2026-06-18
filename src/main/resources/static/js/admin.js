@@ -6,6 +6,10 @@ window.addEventListener('load', () => {
         document.getElementById('admin-content').style.display = 'block';
         loadAllAlerts();
         loadReadings();
+        setInterval(() => {
+            loadAllAlerts();
+            loadReadings();
+        }, 15000);
     }
 });
 
@@ -26,6 +30,10 @@ async function login() {
         document.getElementById('admin-content').style.display = 'block';
         loadAllAlerts();
         loadReadings();
+        setInterval(() => {
+            loadAllAlerts();
+            loadReadings();
+        }, 15000);
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';
     }
@@ -95,9 +103,4 @@ async function loadReadings() {
         `;
         tbody.appendChild(tr);
     }
-
-    setInterval(() => {
-        loadAllAlerts();
-        loadReadings();
-    }, 15000);
 }
