@@ -1,6 +1,8 @@
 
 const API = 'http://localhost:8080/api';
-let map = null;
+let map;
+let mapInitialized = false;
+let markers = [];
 
 window.addEventListener('load', () => {
     if (localStorage.getItem('jwt')) {
@@ -41,6 +43,9 @@ async function loadActiveAlerts() {
     const response = await fetch(`${API}/alerts/active`, { headers: getHeaders() });
     const alerts = await response.json();
     const container = document.getElementById('alerts-container');
+
+    const noAlertsMsg = container.querySelector('p');       // ← her
+    if (noAlertsMsg && alerts.length > 0) noAlertsMsg.remove();
 
     const existingIds = new Set([...container.querySelectorAll('.alert-card')].map(el => el.dataset.alertId));
     const newIds = new Set(alerts.map(a => String(a.id)));
@@ -111,8 +116,6 @@ async function submitReport(alertId) {
     }
 }
 
-let mapInitialized = false;
-
 function initMap() {
     if (mapInitialized) return;
     mapInitialized = true;
@@ -124,14 +127,13 @@ function initMap() {
 }
 
 function addMarkersToMap(alerts) {
-    if (!map) return;
+    if (!mapInitialized) return;
+    markers.forEach(m => m.remove());
+    markers = [];
     alerts.forEach(alert => {
-        L.marker([alert.epicenterLatitude, alert.epicenterLongitude])
+        const marker = L.marker([alert.epicenterLatitude, alert.epicenterLongitude])
             .addTo(map)
-            .bindPopup(`
-                <b>Alert #${alert.id}</b><br>
-                Magnitude: ${alert.estimatedMagnitude.toFixed(1)}<br>
-                ${alert.locationName}
-            `);
+            .bindPopup(`<b>Alert #${alert.id}</b><br>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}<br>${alert.locationName}`);
+        markers.push(marker);
     });
 }
