@@ -42,20 +42,26 @@ async function loadAllAlerts() {
     container.innerHTML = '';
 
     for (const alert of alerts) {
+        const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, {
+            headers: getHeaders()
+        });
+        const count = await countResponse.json();
+
         const card = document.createElement('div');
         card.className = 'alert-card';
         card.innerHTML = `
-            <h3>Alert #${alert.id} – ${alert.status}</h3>
-            <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
-            <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
-            <p>Location: ${alert.locationName}</p>
-            <p>Created: ${alert.createdAt}</p>
-            <div>
-                <button onclick="updateStatus(${alert.id}, 'ACTIVE')">Set ACTIVE</button>
-                <button onclick="updateStatus(${alert.id}, 'FALSE_ALARM')">Set FALSE_ALARM</button>
-                <button onclick="updateStatus(${alert.id}, 'NOT_ACTIVE')">Set NOT_ACTIVE</button>
-            </div>
-        `;
+        <h3>Alert #${alert.id} – ${alert.status}</h3>
+        <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
+        <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
+        <p>Location: ${alert.locationName}</p>
+        <p>Reports: ${count}</p>
+        <p>Created: ${alert.createdAt}</p>
+        <div>
+            <button onclick="updateStatus(${alert.id}, 'ACTIVE')">Set ACTIVE</button>
+            <button onclick="updateStatus(${alert.id}, 'FALSE_ALARM')">Set FALSE_ALARM</button>
+            <button onclick="updateStatus(${alert.id}, 'NOT_ACTIVE')">Set NOT_ACTIVE</button>
+        </div>
+    `;
         container.appendChild(card);
     }
 }
