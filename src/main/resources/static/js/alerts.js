@@ -62,12 +62,35 @@ async function loadActiveAlerts() {
             <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
             <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
             <p>Location: ${alert.locationName}</p>
-            <p>Reports: ${count}</p>
-        `;
+            <p>Reports: <span id="count-${alert.id}">${count}</span></p>
+            <div class="report-section">
+                <p><strong>Report shaking:</strong></p>
+                <input type="number" id="intensity-${alert.id}" min="1" max="10" placeholder="Intensity (1-10)" style="width: 140px;">
+                <button onclick="submitReport(${alert.id})">Submit Report</button>
+            </div>
+            `;
         container.appendChild(card);
     }
 
     addMarkersToMap(alerts);
+}
+
+async function submitReport(alertId) {
+    const intensity = document.getElementById(`intensity-${alertId}`).value;
+    const response = await fetch(`${API}/alerts/${alertId}/reports?intensity=${intensity}`, {
+        method: 'POST',
+        headers: getHeaders()
+    });
+
+    if (response.ok) {
+        const countResponse = await fetch(`${API}/alerts/${alertId}/reports/count`, { headers: getHeaders() });
+        const count = await countResponse.json();
+        document.getElementById(`count-${alertId}`).textContent = count;
+        alert('Report submitted!');
+    } else {
+        const msg = await response.text();
+        alert(msg);
+    }
 }
 
 function initMap() {

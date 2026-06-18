@@ -3,6 +3,7 @@ package org.example.seismicmonitor.controller;
 import org.example.seismicmonitor.model.UserReport;
 import org.example.seismicmonitor.service.UserReportService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,11 +19,15 @@ public class UserReportController {
     }
 
     @PostMapping
-    public ResponseEntity<UserReport> createReport(@PathVariable Long alertId,
-                                                   @RequestParam int intensity) {
-        return ResponseEntity.ok(userReportService.createReport(alertId, intensity));
+    public ResponseEntity<?> createReport(@PathVariable Long alertId,
+                                          @RequestParam int intensity,
+                                          Authentication authentication) {
+        try {
+            return ResponseEntity.ok(userReportService.createReport(alertId, intensity, authentication.getName()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        }
     }
-
     @GetMapping
     public ResponseEntity<List<UserReport>> getReports(@PathVariable Long alertId) {
         return ResponseEntity.ok(userReportService.getReportsForAlert(alertId));

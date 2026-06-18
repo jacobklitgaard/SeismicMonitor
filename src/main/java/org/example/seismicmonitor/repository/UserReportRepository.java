@@ -7,4 +7,5 @@ import java.util.List;
 public interface UserReportRepository extends JpaRepository<UserReport, Long> {
     List<UserReport> findByAlertId(Long alertId);
     int countByAlertId(Long alertId);
+    boolean existsByAlertIdAndReportedBy(Long alertId, String reportedBy);
 }

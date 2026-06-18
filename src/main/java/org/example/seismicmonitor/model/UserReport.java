@@ -20,4 +20,5 @@ public class UserReport {
 
     private int intensity;
     private LocalDateTime createdAt;
+    private String reportedBy;
 }
