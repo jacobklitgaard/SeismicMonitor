@@ -3,6 +3,7 @@ package org.example.seismicmonitor.service;
 import org.example.seismicmonitor.dto.SensorReadingDTO;
 import org.example.seismicmonitor.model.*;
 import org.example.seismicmonitor.repository.EarthquakeAlertRepository;
+import org.example.seismicmonitor.repository.SensorReadingRepository;
 import org.example.seismicmonitor.service.estimation.EpicenterEstimator;
 import org.example.seismicmonitor.service.estimation.MagnitudeEstimator;
 import org.example.seismicmonitor.service.geocoding.GeocodingService;
@@ -17,15 +18,18 @@ public class EarthquakeAlertService {
     private final EpicenterEstimator epicenterEstimator;
     private final MagnitudeEstimator magnitudeEstimator;
     private final GeocodingService geocodingService;
+    private final SensorReadingRepository sensorReadingRepository;
 
     public EarthquakeAlertService(EarthquakeAlertRepository alertRepository,
                                   EpicenterEstimator epicenterEstimator,
                                   MagnitudeEstimator magnitudeEstimator,
-                                  GeocodingService geocodingService) {
+                                  GeocodingService geocodingService,
+                                  SensorReadingRepository sensorReadingRepository) {
         this.alertRepository = alertRepository;
         this.epicenterEstimator = epicenterEstimator;
         this.magnitudeEstimator = magnitudeEstimator;
         this.geocodingService = geocodingService;
+        this.sensorReadingRepository = sensorReadingRepository;
     }
 
     // trys to create an alert from three sensor readings
@@ -56,7 +60,13 @@ public class EarthquakeAlertService {
             alert.setCreatedAt(LocalDateTime.now());
             alert.setLocationName(locationName);
             alert.setReadings(savedReadings);
-            alertRepository.save(alert);
+
+            // Save alert and link each sensor reading to it via the owning side of the relation
+            EarthquakeAlert savedAlert = alertRepository.save(alert);
+            for (SensorReading reading : savedReadings) {
+                reading.setAlert(savedAlert);
+                sensorReadingRepository.save(reading);
+            }
 
         } catch (IllegalArgumentException e) {
             // quiet exception handling - save readings but no alert - and no error

@@ -1,5 +1,6 @@
 package org.example.seismicmonitor.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,12 @@ public class SecurityConfig {
 
     private final JWTService jwtService;
 
+    @Value("${user.password}")
+    private String userPassword;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
     public SecurityConfig(JWTService jwtService) {
         this.jwtService = jwtService;
     }
@@ -43,12 +50,13 @@ public class SecurityConfig {
                     return config;
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/alerts/*/reports/count").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/alerts/*/reports/average-intensity").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/sensor-data").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/dologin").permitAll()
                         .requestMatchers("/api/alerts/active").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/alerts/*/reports").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/alerts/*/reports/count").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/alerts/*/reports/average-intensity").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/alerts/*/reports").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/alerts/*/reports").hasRole("USER")
                         .requestMatchers("/api/alerts/**").hasRole("ADMIN")
                         .requestMatchers("/api/sensor-readings").hasRole("ADMIN")
                         .requestMatchers("/**").permitAll()
@@ -72,14 +80,14 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
         var user = User.builder()
-                .username("user")
-                .password(encoder.encode("user123"))
+                .username("Jacob")
+                .password(encoder.encode(userPassword))
                 .roles("USER")
                 .build();
 
         var admin = User.builder()
                 .username("admin")
-                .password(encoder.encode("admin123"))
+                .password(encoder.encode(adminPassword))
                 .roles("ADMIN")
                 .build();
 

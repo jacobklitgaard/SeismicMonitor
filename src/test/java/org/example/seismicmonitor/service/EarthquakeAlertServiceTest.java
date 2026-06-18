@@ -3,8 +3,10 @@ package org.example.seismicmonitor.service;
 import org.example.seismicmonitor.dto.SensorReadingDTO;
 import org.example.seismicmonitor.model.*;
 import org.example.seismicmonitor.repository.EarthquakeAlertRepository;
+import org.example.seismicmonitor.repository.SensorReadingRepository;
 import org.example.seismicmonitor.service.estimation.EpicenterEstimator;
 import org.example.seismicmonitor.service.estimation.MagnitudeEstimator;
+import org.example.seismicmonitor.service.geocoding.GeocodingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +28,10 @@ class EarthquakeAlertServiceTest {
     private EpicenterEstimator epicenterEstimator;
     @Mock
     private MagnitudeEstimator magnitudeEstimator;
+    @Mock
+    private GeocodingService geocodingService;
+    @Mock
+    private SensorReadingRepository sensorReadingRepository;
 
     @InjectMocks
     private EarthquakeAlertService earthquakeAlertService;

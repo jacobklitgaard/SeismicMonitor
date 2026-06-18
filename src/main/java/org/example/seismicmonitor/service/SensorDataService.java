@@ -42,6 +42,7 @@ public class SensorDataService {
             SensorReading reading = new SensorReading();
             reading.setReadingId(dto.getReadingId());
             reading.setSensor(sensor);
+            // alert sættes senere i tryCreateAlert
             reading.setEstimatedDistanceToEpicenterKm(dto.getEstimatedDistanceToEpicenterKm());
             reading.setEstimatedMagnitude(dto.getEstimatedMagnitude());
             reading.setRecordedAt(dto.getRecordedAt());

@@ -4,6 +4,10 @@ const API = 'http://localhost:8080/api';
 // Skip login if JWT already exists in localStorage, then start auto-refresh
 window.addEventListener('load', () => {
     if (localStorage.getItem('jwt')) {
+        if (!getRole()?.includes('ROLE_ADMIN')) {
+            localStorage.removeItem('jwt');
+            return;
+        }
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
         loadAllAlerts();
@@ -29,6 +33,11 @@ async function login() {
     if (response.ok) {
         const token = response.headers.get('Authorization');
         localStorage.setItem('jwt', token);
+        if (!getRole()?.includes('ROLE_ADMIN')) {
+            document.getElementById('error-msg').textContent = 'Access denied';
+            localStorage.removeItem('jwt');
+            return;
+        }
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
         loadAllAlerts();
@@ -40,6 +49,14 @@ async function login() {
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';
     }
+}
+
+
+function getRole() {
+    const token = localStorage.getItem('jwt');
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.authorities;
 }
 
 // Returns Authorization header with JWT for all requests
@@ -61,15 +78,28 @@ async function loadAllAlerts() {
         const avgResponse = await fetch(`${API}/alerts/${alert.id}/reports/average-intensity`, { headers: getHeaders() });
         const avg = await avgResponse.json();
 
+        const reportsResponse = await fetch(`${API}/alerts/${alert.id}/reports`, { headers: getHeaders() });
+        const reports = await reportsResponse.json();
+
+        const readingsResponse = await fetch(`${API}/alerts/${alert.id}/readings`, { headers: getHeaders() });
+        const readings = await readingsResponse.json();
+
         const card = document.createElement('div');
         card.className = 'alert-card';
         card.innerHTML = `
         <h3>Alert #${alert.id} – ${alert.status}</h3>
         <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
         <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
+        <p>Triggered by:</p>
+        <ul>
+            ${readings.map(r => `<li>${r.sensor.sensorId} – distance: ${r.estimatedDistanceToEpicenterKm.toFixed(1)} km, magnitude: ${r.estimatedMagnitude.toFixed(2)}</li>`).join('')}
+        </ul>
         <p>Location: ${alert.locationName}</p>
         <p>Reports: ${count} (avg. intensity: ${avg.toFixed(1)})</p>
-        <p>Created: ${alert.createdAt}</p>
+        <ul>
+            ${reports.map(r => `<li>${r.reportedBy} – intensity: ${r.intensity}</li>`).join('')}
+        </ul>
+        <p>Created: ${new Date(alert.createdAt).toLocaleString('da-DK')}</p>
         <div>
             <button onclick="updateStatus(${alert.id}, 'ACTIVE')">Set ACTIVE</button>
             <button onclick="updateStatus(${alert.id}, 'FALSE_ALARM')">Set FALSE_ALARM</button>

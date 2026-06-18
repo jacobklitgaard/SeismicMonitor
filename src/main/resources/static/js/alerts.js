@@ -6,6 +6,10 @@ let markers = [];
 // Skip login if JWT already exists in localStorage, then start auto-refresh
 window.addEventListener('load', () => {
     if (localStorage.getItem('jwt')) {
+        if (getRole()?.includes('ROLE_ADMIN')) {
+            localStorage.removeItem('jwt');
+            return;
+        }
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadActiveAlerts();
@@ -27,6 +31,11 @@ async function login() {
     if (response.ok) {
         const token = response.headers.get('Authorization');
         localStorage.setItem('jwt', token);
+        if (getRole()?.includes('ROLE_ADMIN')) {
+            document.getElementById('error-msg').textContent = 'Access denied';
+            localStorage.removeItem('jwt');
+            return;
+        }
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadActiveAlerts();
@@ -34,6 +43,13 @@ async function login() {
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';
     }
+}
+
+function getRole() {
+    const token = localStorage.getItem('jwt');
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.authorities;
 }
 
 // Returns Authorization header with JWT for protected requests

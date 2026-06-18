@@ -2,7 +2,6 @@ package org.example.seismicmonitor.service;
 
 import org.example.seismicmonitor.dto.SensorReadingDTO;
 import org.example.seismicmonitor.model.Sensor;
-import org.example.seismicmonitor.model.SensorReading;
 import org.example.seismicmonitor.repository.SensorReadingRepository;
 import org.example.seismicmonitor.repository.SensorRepository;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,9 @@ class SensorDataServiceTest {
 
     @Mock
     private SensorReadingRepository sensorReadingRepository;
+
+    @Mock
+    private EarthquakeAlertService earthquakeAlertService;
 
     @InjectMocks
     private SensorDataService sensorDataService;
