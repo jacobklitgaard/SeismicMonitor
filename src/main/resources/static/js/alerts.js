@@ -47,8 +47,9 @@ async function loadActiveAlerts() {
     const noAlertsMsg = container.querySelector('p');       // ← her
     if (noAlertsMsg && alerts.length > 0) noAlertsMsg.remove();
 
-    const existingIds = new Set([...container.querySelectorAll('.alert-card')].map(el => el.dataset.alertId));
-    const newIds = new Set(alerts.map(a => String(a.id)));
+    const alertCards = container.querySelectorAll('.alert-card');
+    const existingIds = new Set([...alertCards].map(card => card.dataset.alertId));
+    const newIds = new Set(alerts.map(alert => String(alert.id)));
 
     for (const id of existingIds) {
         if (!newIds.has(id)) {
