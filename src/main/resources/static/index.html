@@ -6,16 +6,28 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<h1>Active Earthquake Alerts</h1>
-<div id="alerts-container"></div>
 
-<h2>Report Shaking</h2>
-<form id="report-form">
-    <label>Alert ID: <input type="number" id="alert-id"></label>
-    <label>Intensity (1-10): <input type="number" id="intensity" min="1" max="10"></label>
-    <button type="submit">Submit Report</button>
-</form>
+<div id="login-section">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="error-msg" style="color:red;"></p>
+</div>
+
+<div id="main-content" style="display:none;">
+    <h1>Active Earthquake Alerts</h1>
+    <div id="alerts-container"></div>
+
+    <h2>Report Shaking</h2>
+    <form id="report-form">
+        <label>Alert ID: <input type="number" id="alert-id"></label>
+        <label>Intensity (1-10): <input type="number" id="intensity" min="1" max="10"></label>
+        <button type="submit">Submit Report</button>
+    </form>
+</div>
 
 <script src="js/alerts.js"></script>
 </body>
+
 </html>
