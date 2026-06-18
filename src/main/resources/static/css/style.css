@@ -3,14 +3,69 @@ body {
     max-width: 900px;
     margin: 40px auto;
     padding: 0 20px;
+    background: #f0f2f5;
+    color: #333;
+}
+
+h1, h2 {
+    color: #222;
 }
 
 .alert-card {
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 16px;
     margin: 12px 0;
-    background: #f9f9f9;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
-.status-active { border-left: 4px solid red; }
+.status-active {
+    border-left: 4px solid #1976d2;
+}
+
+button {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+button:hover {
+    background: #1565c0;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #e0e0e0;
+    font-weight: bold;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}

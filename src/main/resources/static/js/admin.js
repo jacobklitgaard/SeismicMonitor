@@ -1,5 +1,7 @@
+
 const API = 'http://localhost:8080/api';
 
+// Skip login if JWT already exists in localStorage, then start auto-refresh
 window.addEventListener('load', () => {
     if (localStorage.getItem('jwt')) {
         document.getElementById('login-section').style.display = 'none';
@@ -13,6 +15,7 @@ window.addEventListener('load', () => {
     }
 });
 
+// Authenticate user, store JWT in localStorage and show admin content
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -39,10 +42,12 @@ async function login() {
     }
 }
 
+// Returns Authorization header with JWT for all requests
 function getHeaders() {
     return { 'Authorization': localStorage.getItem('jwt') };
 }
 
+// Fetches all alerts with report count and average intensity, renders as cards
 async function loadAllAlerts() {
     const response = await fetch(`${API}/alerts`, { headers: getHeaders() });
     const alerts = await response.json();
@@ -75,6 +80,7 @@ async function loadAllAlerts() {
     }
 }
 
+// Sends status update to server and reloads alerts on success
 async function updateStatus(id, status) {
     const response = await fetch(`${API}/alerts/${id}/status?status=${status}`, {
         method: 'PUT',
@@ -87,6 +93,7 @@ async function updateStatus(id, status) {
     }
 }
 
+// Fetches all raw sensor readings and renders them in a table
 async function loadReadings() {
     const response = await fetch(`${API}/sensor-readings`, { headers: getHeaders() });
     const readings = await response.json();
@@ -96,10 +103,10 @@ async function loadReadings() {
     for (const r of readings) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${r.readingId}</td>
+            <td>${r.readingId.substring(0, 8)}...</td>
             <td>${r.sensor.sensorId}</td>
-            <td>${r.estimatedDistanceToEpicenterKm}</td>
-            <td>${r.estimatedMagnitude}</td>
+            <td style="text-align: left">${r.estimatedDistanceToEpicenterKm.toFixed(1)}</td>
+            <td style="text-align: left">${r.estimatedMagnitude.toFixed(2)}</td>
             <td>${r.recordedAt}</td>
         `;
         tbody.appendChild(tr);

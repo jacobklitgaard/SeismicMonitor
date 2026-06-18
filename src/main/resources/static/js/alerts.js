@@ -1,9 +1,9 @@
-
 const API = 'http://localhost:8080/api';
 let map;
 let mapInitialized = false;
 let markers = [];
 
+// Skip login if JWT already exists in localStorage, then start auto-refresh
 window.addEventListener('load', () => {
     if (localStorage.getItem('jwt')) {
         document.getElementById('login-section').style.display = 'none';
@@ -13,6 +13,7 @@ window.addEventListener('load', () => {
     }
 });
 
+// Authenticate user, store JWT in localStorage and show main content
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -35,22 +36,26 @@ async function login() {
     }
 }
 
+// Returns Authorization header with JWT for protected requests
 function getHeaders() {
     return { 'Authorization': localStorage.getItem('jwt') };
 }
 
+// Fetches active alerts, adds new cards, removes inactive ones and updates report counts
 async function loadActiveAlerts() {
     const response = await fetch(`${API}/alerts/active`, { headers: getHeaders() });
     const alerts = await response.json();
     const container = document.getElementById('alerts-container');
 
-    const noAlertsMsg = container.querySelector('p');       // ← her
+    // Remove "No active alerts" message if alerts have arrived
+    const noAlertsMsg = container.querySelector('p');
     if (noAlertsMsg && alerts.length > 0) noAlertsMsg.remove();
 
     const alertCards = container.querySelectorAll('.alert-card');
     const existingIds = new Set([...alertCards].map(card => card.dataset.alertId));
     const newIds = new Set(alerts.map(alert => String(alert.id)));
 
+    // Remove cards for alerts that are no longer active
     for (const id of existingIds) {
         if (!newIds.has(id)) {
             container.querySelector(`[data-alert-id="${id}"]`).remove();
@@ -69,8 +74,10 @@ async function loadActiveAlerts() {
         const count = await countResponse.json();
 
         if (existingIds.has(String(alert.id))) {
+            // Only update report count on existing cards to avoid re-rendering
             document.getElementById(`count-${alert.id}`).textContent = count;
         } else {
+            // Create and append card for new alert
             const card = document.createElement('div');
             card.className = 'alert-card status-active';
             card.dataset.alertId = alert.id;
@@ -93,6 +100,7 @@ async function loadActiveAlerts() {
     addMarkersToMap(alerts);
 }
 
+// Submits a shaking report for an alert, validates intensity and updates count on success
 async function submitReport(alertId) {
     const intensity = document.getElementById(`intensity-${alertId}`).value;
 
@@ -117,6 +125,7 @@ async function submitReport(alertId) {
     }
 }
 
+// Initialises the Leaflet map once — subsequent calls are ignored
 function initMap() {
     if (mapInitialized) return;
     mapInitialized = true;
@@ -127,6 +136,7 @@ function initMap() {
     }).addTo(map);
 }
 
+// Clears existing markers and adds a marker for each active alert
 function addMarkersToMap(alerts) {
     if (!mapInitialized) return;
     markers.forEach(m => m.remove());
