@@ -50,10 +50,11 @@ async function loadAllAlerts() {
     container.innerHTML = '';
 
     for (const alert of alerts) {
-        const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, {
-            headers: getHeaders()
-        });
+        const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, { headers: getHeaders()});
         const count = await countResponse.json();
+
+        const avgResponse = await fetch(`${API}/alerts/${alert.id}/reports/average-intensity`, { headers: getHeaders() });
+        const avg = await avgResponse.json();
 
         const card = document.createElement('div');
         card.className = 'alert-card';
@@ -62,7 +63,7 @@ async function loadAllAlerts() {
         <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
         <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
         <p>Location: ${alert.locationName}</p>
-        <p>Reports: ${count}</p>
+        <p>Reports: ${count} (avg. intensity: ${avg.toFixed(1)})</p>
         <p>Created: ${alert.createdAt}</p>
         <div>
             <button onclick="updateStatus(${alert.id}, 'ACTIVE')">Set ACTIVE</button>

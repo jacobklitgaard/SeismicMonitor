@@ -44,6 +44,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/alerts/*/reports/count").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/alerts/*/reports/average-intensity").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/sensor-data").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/dologin").permitAll()
                         .requestMatchers("/api/alerts/active").hasAnyRole("USER", "ADMIN")

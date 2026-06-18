@@ -1,6 +1,7 @@
 package org.example.seismicmonitor.controller;
 
 import org.example.seismicmonitor.model.UserReport;
+import org.example.seismicmonitor.repository.UserReportRepository;
 import org.example.seismicmonitor.service.UserReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,9 +14,11 @@ import java.util.List;
 public class UserReportController {
 
     private final UserReportService userReportService;
+    private final UserReportRepository userReportRepository;
 
-    public UserReportController(UserReportService userReportService) {
+    public UserReportController(UserReportService userReportService, UserReportRepository userReportRepository) {
         this.userReportService = userReportService;
+        this.userReportRepository = userReportRepository;
     }
 
     @PostMapping
@@ -36,5 +39,11 @@ public class UserReportController {
     @GetMapping("/count")
     public ResponseEntity<Integer> getCount(@PathVariable Long alertId) {
         return ResponseEntity.ok(userReportService.countReportsForAlert(alertId));
+    }
+
+    @GetMapping("/average-intensity")
+    public ResponseEntity<Double> getAverageIntensity(@PathVariable Long alertId) {
+        Double avg = userReportRepository.averageIntensityByAlertId(alertId);
+        return ResponseEntity.ok(avg != null ? avg : 0.0);
     }
 }
