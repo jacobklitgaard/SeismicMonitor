@@ -1,3 +1,4 @@
+
 const API = 'http://localhost:8080/api';
 let map = null;
 
@@ -40,7 +41,15 @@ async function loadActiveAlerts() {
     const response = await fetch(`${API}/alerts/active`, { headers: getHeaders() });
     const alerts = await response.json();
     const container = document.getElementById('alerts-container');
-    container.innerHTML = '';
+
+    const existingIds = new Set([...container.querySelectorAll('.alert-card')].map(el => el.dataset.alertId));
+    const newIds = new Set(alerts.map(a => String(a.id)));
+
+    for (const id of existingIds) {
+        if (!newIds.has(id)) {
+            container.querySelector(`[data-alert-id="${id}"]`).remove();
+        }
+    }
 
     if (alerts.length === 0) {
         container.innerHTML = '<p>No active alerts.</p>';
@@ -50,26 +59,29 @@ async function loadActiveAlerts() {
     initMap();
 
     for (const alert of alerts) {
-        const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, {
-            headers: getHeaders()
-        });
+        const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, { headers: getHeaders() });
         const count = await countResponse.json();
 
-        const card = document.createElement('div');
-        card.className = 'alert-card status-active';
-        card.innerHTML = `
-            <h3>Alert #${alert.id}</h3>
-            <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
-            <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
-            <p>Location: ${alert.locationName}</p>
-            <p>Reports: <span id="count-${alert.id}">${count}</span></p>
-            <div class="report-section">
-                <p><strong>Report shaking:</strong></p>
-                <input type="number" id="intensity-${alert.id}" min="1" max="10" placeholder="Intensity (1-10)" style="width: 140px;">
-                <button onclick="submitReport(${alert.id})">Submit Report</button>
-            </div>
+        if (existingIds.has(String(alert.id))) {
+            document.getElementById(`count-${alert.id}`).textContent = count;
+        } else {
+            const card = document.createElement('div');
+            card.className = 'alert-card status-active';
+            card.dataset.alertId = alert.id;
+            card.innerHTML = `
+                <h3>Alert #${alert.id}</h3>
+                <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
+                <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
+                <p>Location: ${alert.locationName}</p>
+                <p>Reports: <span id="count-${alert.id}">${count}</span></p>
+                <div class="report-section">
+                    <p><strong>Report shaking:</strong></p>
+                    <input type="number" id="intensity-${alert.id}" min="1" max="10" placeholder="Intensity (1-10)" style="width: 140px;">
+                    <button onclick="submitReport(${alert.id})">Submit Report</button>
+                </div>
             `;
-        container.appendChild(card);
+            container.appendChild(card);
+        }
     }
 
     addMarkersToMap(alerts);
@@ -77,6 +89,12 @@ async function loadActiveAlerts() {
 
 async function submitReport(alertId) {
     const intensity = document.getElementById(`intensity-${alertId}`).value;
+
+    if (!intensity || intensity < 1 || intensity > 10) {
+        alert('Please enter an intensity between 1 and 10');
+        return;
+    }
+
     const response = await fetch(`${API}/alerts/${alertId}/reports?intensity=${intensity}`, {
         method: 'POST',
         headers: getHeaders()
@@ -93,8 +111,12 @@ async function submitReport(alertId) {
     }
 }
 
+let mapInitialized = false;
+
 function initMap() {
-    if (map) return;
+    if (mapInitialized) return;
+    mapInitialized = true;
+
     map = L.map('map').setView([55.0, 12.0], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -113,17 +135,3 @@ function addMarkersToMap(alerts) {
             `);
     });
 }
-
-document.getElementById('report-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const alertId = document.getElementById('alert-id').value;
-    const intensity = document.getElementById('intensity').value;
-
-    await fetch(`${API}/alerts/${alertId}/reports?intensity=${intensity}`, {
-        method: 'POST',
-        headers: getHeaders()
-    });
-
-    alert('Report submitted!');
-    loadActiveAlerts();
-});
