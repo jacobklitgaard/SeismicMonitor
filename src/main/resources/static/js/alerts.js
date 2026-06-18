@@ -1,29 +1,32 @@
 const API = 'http://localhost:8080/api';
-let credentials = null;
 
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    credentials = btoa(`${username}:${password}`);
 
-    const response = await fetch(`${API}/alerts/active`, {
-        headers: { 'Authorization': `Basic ${credentials}` }
+    const response = await fetch(`${API}/dologin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
     });
 
     if (response.ok) {
+        const token = response.headers.get('Authorization');
+        sessionStorage.setItem('jwt', token);
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadActiveAlerts();
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';
-        credentials = null;
     }
 }
 
+function getHeaders() {
+    return { 'Authorization': sessionStorage.getItem('jwt') };
+}
+
 async function loadActiveAlerts() {
-    const response = await fetch(`${API}/alerts/active`, {
-        headers: { 'Authorization': `Basic ${credentials}` }
-    });
+    const response = await fetch(`${API}/alerts/active`, { headers: getHeaders() });
     const alerts = await response.json();
     const container = document.getElementById('alerts-container');
     container.innerHTML = '';
@@ -35,7 +38,7 @@ async function loadActiveAlerts() {
 
     for (const alert of alerts) {
         const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, {
-            headers: { 'Authorization': `Basic ${credentials}` }
+            headers: getHeaders()
         });
         const count = await countResponse.json();
 
@@ -59,7 +62,7 @@ document.getElementById('report-form')?.addEventListener('submit', async (e) => 
 
     await fetch(`${API}/alerts/${alertId}/reports?intensity=${intensity}`, {
         method: 'POST',
-        headers: { 'Authorization': `Basic ${credentials}` }
+        headers: getHeaders()
     });
 
     alert('Report submitted!');

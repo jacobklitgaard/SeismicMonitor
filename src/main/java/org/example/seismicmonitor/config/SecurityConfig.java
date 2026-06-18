@@ -15,7 +15,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import jakarta.servlet.Filter;
 
 import java.util.List;
 
@@ -53,15 +52,9 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterAfter(jwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .httpBasic(httpBasic -> {});
         return http.build();
-    }
-
-    @Bean
-    public JWTTokenGeneratorFilter jwtTokenGeneratorFilter() {
-        return new JWTTokenGeneratorFilter(jwtService);
     }
 
     @Bean

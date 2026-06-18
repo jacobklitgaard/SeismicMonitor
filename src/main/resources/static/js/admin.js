@@ -1,31 +1,33 @@
-let credentials = null;
+const API = 'http://localhost:8080/api';
 
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    credentials = btoa(`${username}:${password}`);
 
-    const response = await fetch(`${API}/alerts`, {
-        headers: { 'Authorization': `Basic ${credentials}` }
+    const response = await fetch(`${API}/dologin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
     });
 
     if (response.ok) {
+        const token = response.headers.get('Authorization');
+        sessionStorage.setItem('jwt', token);
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
         loadAllAlerts();
         loadReadings();
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';
-        credentials = null;
     }
 }
 
-const API = 'http://localhost:8080/api';
+function getHeaders() {
+    return { 'Authorization': sessionStorage.getItem('jwt') };
+}
 
 async function loadAllAlerts() {
-    const response = await fetch(`${API}/alerts`, {
-        headers: { 'Authorization': `Basic ${credentials}` }
-    });
+    const response = await fetch(`${API}/alerts`, { headers: getHeaders() });
     const alerts = await response.json();
     const container = document.getElementById('all-alerts-container');
     container.innerHTML = '';
@@ -37,6 +39,7 @@ async function loadAllAlerts() {
             <h3>Alert #${alert.id} – ${alert.status}</h3>
             <p>Magnitude: ${alert.estimatedMagnitude.toFixed(1)}</p>
             <p>Epicenter: ${alert.epicenterLatitude.toFixed(4)}, ${alert.epicenterLongitude.toFixed(4)}</p>
+            <p>Location: ${alert.locationName}</p>
             <p>Created: ${alert.createdAt}</p>
             <div>
                 <button onclick="updateStatus(${alert.id}, 'ACTIVE')">Set ACTIVE</button>
@@ -51,7 +54,7 @@ async function loadAllAlerts() {
 async function updateStatus(id, status) {
     const response = await fetch(`${API}/alerts/${id}/status?status=${status}`, {
         method: 'PUT',
-        headers: { 'Authorization': `Basic ${credentials}` }
+        headers: getHeaders()
     });
     if (response.ok) {
         loadAllAlerts();
@@ -61,9 +64,7 @@ async function updateStatus(id, status) {
 }
 
 async function loadReadings() {
-    const response = await fetch(`${API}/sensor-readings`, {
-        headers: { 'Authorization': `Basic ${credentials}` }
-    });
+    const response = await fetch(`${API}/sensor-readings`, { headers: getHeaders() });
     const readings = await response.json();
     const tbody = document.getElementById('readings-body');
     tbody.innerHTML = '';
