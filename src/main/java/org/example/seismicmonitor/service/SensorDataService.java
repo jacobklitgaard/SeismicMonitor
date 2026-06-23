@@ -42,13 +42,15 @@ public class SensorDataService {
             SensorReading reading = new SensorReading();
             reading.setReadingId(dto.getReadingId());
             reading.setSensor(sensor);
-            // alert sættes senere i tryCreateAlert
+            // alert is set later in tryCreateAlert
             reading.setEstimatedDistanceToEpicenterKm(dto.getEstimatedDistanceToEpicenterKm());
             reading.setEstimatedMagnitude(dto.getEstimatedMagnitude());
             reading.setRecordedAt(dto.getRecordedAt());
+            // Saves to DB and adds to list (savedReadings)
             savedReadings.add(sensorReadingRepository.save(reading));
         }
 
+        // dtos for calculation and savedReadings for connecting entities to alert
         earthquakeAlertService.tryCreateAlert(dtos, savedReadings);
     }
 

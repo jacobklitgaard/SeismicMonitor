@@ -36,9 +36,11 @@ public class LoginController {
                         loginRequest.getUsername(),
                         loginRequest.getPassword()));
 
+        // ekstra check - then finds list of roles
         if (auth.isAuthenticated()) {
             String authorities = auth.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
+                    // if more roles for one user
                     .collect(Collectors.joining(","));
 
             String jwt = Jwts.builder()

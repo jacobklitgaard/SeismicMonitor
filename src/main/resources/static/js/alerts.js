@@ -83,8 +83,6 @@ async function loadActiveAlerts() {
         return;
     }
 
-    initMap();
-
     for (const alert of alerts) {
         const countResponse = await fetch(`${API}/alerts/${alert.id}/reports/count`, { headers: getHeaders() });
         const count = await countResponse.json();
@@ -113,6 +111,7 @@ async function loadActiveAlerts() {
         }
     }
 
+    initMap();
     addMarkersToMap(alerts);
 }
 

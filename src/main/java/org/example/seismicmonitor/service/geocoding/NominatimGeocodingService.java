@@ -12,6 +12,7 @@ public class NominatimGeocodingService implements GeocodingService {
     public NominatimGeocodingService(WebClient.Builder builder) {
         this.webClient = builder
                 .baseUrl("https://nominatim.openstreetmap.org")
+                // requirement from Nominatim to identify yourself
                 .defaultHeader("User-Agent", "SeismicMonitor/1.0")
                 .build();
     }

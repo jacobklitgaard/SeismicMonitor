@@ -13,6 +13,7 @@ public class JWTService {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    // gets secret from properties, converts to SecretKey that signs and verifies token
     public SecretKey getKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }

@@ -22,6 +22,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
     }
 
+    // Validates the JWT from the request header and sets the authenticated user in the Spring Security context.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -43,6 +44,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("Invalid token");
             }
         }
+        // sends to next filter
         filterChain.doFilter(request, response);
     }
 
@@ -51,3 +53,4 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         return request.getServletPath().equals("/api/dologin");
     }
 }
+

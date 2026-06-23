@@ -1,7 +1,7 @@
 
 const API = 'http://localhost:8080/api';
 
-// Skip login if JWT already exists in localStorage, then start auto-refresh
+// Runs when page is loaded. Skip login if JWT already exists in localStorage, then start auto-refresh
 window.addEventListener('load', () => {
     if (localStorage.getItem('jwt')) {
         if (!getRole()?.includes('ROLE_ADMIN')) {
@@ -55,6 +55,7 @@ async function login() {
 function getRole() {
     const token = localStorage.getItem('jwt');
     if (!token) return null;
+    // ASCII to binary - base64 til string
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.authorities;
 }

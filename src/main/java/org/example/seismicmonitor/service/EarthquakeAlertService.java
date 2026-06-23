@@ -36,8 +36,7 @@ public class EarthquakeAlertService {
     public void tryCreateAlert(List<SensorReadingDTO> readings, List<SensorReading> savedReadings) {
         if (readings.size() != 3) return;
 
-
-        // converts new SensorReadings to LocationWithDistance (measurements) for the trilateration-algorithm
+        // converts new SensorReadings to LocationWithDistance (measurements) used by the trilateration-algorithm
         List<LocationWithDistance> measurements = readings.stream()
                 .map(r -> new LocationWithDistance(
                         new Location(r.getSensorLocation().getLatitude(),
@@ -61,8 +60,10 @@ public class EarthquakeAlertService {
             alert.setLocationName(locationName);
             alert.setReadings(savedReadings);
 
-            // Save alert and link each sensor reading to it via the owning side of the relation
+            // Save alert to DB
             EarthquakeAlert savedAlert = alertRepository.save(alert);
+
+            // Puts the alert relation on every sensorReading and saves again. Alert field needs to be set explicitly on owning side to be saved
             for (SensorReading reading : savedReadings) {
                 reading.setAlert(savedAlert);
                 sensorReadingRepository.save(reading);

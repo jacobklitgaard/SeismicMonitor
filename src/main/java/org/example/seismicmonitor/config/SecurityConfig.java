@@ -38,7 +38,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(request -> {
@@ -62,7 +61,9 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                // validator before Spring Securitys own filter, so JWT is validated on all requests
                 .addFilterBefore(jwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+                // basic auth as fallback
                 .httpBasic(httpBasic -> {});
         return http.build();
     }
