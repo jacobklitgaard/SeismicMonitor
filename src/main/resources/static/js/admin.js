@@ -14,7 +14,6 @@ window.addEventListener('load', () => {
         loadReadings();
         setInterval(() => {
             loadAllAlerts();
-            loadReadings();
         }, 15000);
     }
 });
@@ -44,7 +43,6 @@ async function login() {
         loadReadings();
         setInterval(() => {
             loadAllAlerts();
-            loadReadings();
         }, 15000);
     } else {
         document.getElementById('error-msg').textContent = 'Invalid credentials';

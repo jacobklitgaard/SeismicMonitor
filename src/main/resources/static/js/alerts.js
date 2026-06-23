@@ -88,7 +88,7 @@ async function loadActiveAlerts() {
         const count = await countResponse.json();
 
         if (existingIds.has(String(alert.id))) {
-            // Only update report count on existing cards to avoid re-rendering
+            // Only update report count on existing cards to avoid re-rendering (no blinking)
             document.getElementById(`count-${alert.id}`).textContent = count;
         } else {
             // Create and append card for new alert
