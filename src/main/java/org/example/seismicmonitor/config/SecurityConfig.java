@@ -27,6 +27,9 @@ public class SecurityConfig {
     @Value("${user.password}")
     private String userPassword;
 
+    @Value("${user2.password}")
+    private String user2Password;
+
     @Value("${admin.password}")
     private String adminPassword;
 
@@ -86,13 +89,19 @@ public class SecurityConfig {
                 .roles("USER")
                 .build();
 
+        var user2 = User.builder()
+                .username("Ulf")
+                .password(encoder.encode(user2Password))
+                .roles("USER")
+                .build();
+
         var admin = User.builder()
                 .username("admin")
                 .password(encoder.encode(adminPassword))
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(user, admin);
+        return new InMemoryUserDetailsManager(user, user2, admin);
     }
 
     @Bean

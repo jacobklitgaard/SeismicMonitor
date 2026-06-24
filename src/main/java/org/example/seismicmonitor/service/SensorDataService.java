@@ -47,10 +47,11 @@ public class SensorDataService {
             reading.setEstimatedMagnitude(dto.getEstimatedMagnitude());
             reading.setRecordedAt(dto.getRecordedAt());
             // Saves to DB and adds to list (savedReadings)
-            savedReadings.add(sensorReadingRepository.save(reading));
+            SensorReading saved = sensorReadingRepository.save(reading);
+            savedReadings.add(saved);
         }
 
-        // dtos for calculation and savedReadings for connecting entities to alert
+        // dtos for calculations and savedReadings (entities) for connecting to alert
         earthquakeAlertService.tryCreateAlert(dtos, savedReadings);
     }
 
